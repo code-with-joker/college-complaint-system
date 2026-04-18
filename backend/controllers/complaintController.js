@@ -51,11 +51,13 @@ exports.createComplaint = async (req, res) => {
     }
 
     let imageUrl = "";
+    let imageFileId = "";
 
     if (req.file) {
       const result = await uploadFile(req.file.buffer.toString("base64"));
+
       imageUrl = result.url;
-      const imageFileId = result.fileId;
+      imageFileId = result.fileId;   // 🔥 IMPORTANT FIX
     }
 
     const complaint = await Complaint.create({
