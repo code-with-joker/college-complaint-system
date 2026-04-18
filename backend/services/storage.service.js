@@ -1,21 +1,17 @@
 const imagekit = require("../config/imagekit");
 
-// 🔥 UPLOAD
 exports.uploadFile = async (file) => {
-  const result = await imagekit.upload.files({
-    file,
-    fileName: "complaint_" + Date.now(),
-    folder: "/complaints"
-  });
-
-  return result;
-};
-
-// 🔥 DELETE
-exports.deleteFile = async (fileId) => {
   try {
-    await imagekit.deleteFile(fileId);
+    const result = await imagekit.upload({
+      file: file,
+      fileName: "complaint_" + Date.now(),
+      folder: "complaints"
+    });
+
+    return result;
+
   } catch (err) {
-    console.log("❌ Image delete error:", err.message);
+    console.log("❌ Upload error:", err.message);
+    throw err;
   }
 };
