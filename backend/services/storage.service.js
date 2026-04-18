@@ -2,7 +2,7 @@ const imagekit = require("../config/imagekit");
 
 // 🔥 UPLOAD
 exports.uploadFile = async (file) => {
-  const result = await imagekit.upload({
+  const result = await imagekit.upload.files({
     file,
     fileName: "complaint_" + Date.now(),
     folder: "/complaints"
