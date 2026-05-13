@@ -10,13 +10,13 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS
   }
 });
-
+console.log(process.env.SMTP_USER)
 // 🔥 reusable send function
 exports.sendEmail = async ({ to, subject, html }) => {
   try {
 
     await transporter.sendMail({
-      from: `"CampusResolve" <${process.env.SMTP_USER}>`,
+      from: `"CampusResolve" <kishankumarmth2006@gmail.com>`,
       to,
       subject,
       html
