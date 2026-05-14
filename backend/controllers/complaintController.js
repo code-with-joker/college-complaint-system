@@ -5,6 +5,8 @@ const User = require("../models/User");
 const Assignment = require("../models/Assignment");
 const { sendEmail } = require("../services/email.service");
 const { complaintAssignedTemplate } = require("../templates/complaintAssignedEmail");
+const { detectPriority } = require("../utils/priorityDetector");
+const departments = require("../config/departments");
 
 // let lastAssignedIndex = {};
 exports.createComplaint = async (req, res) => {
@@ -17,27 +19,47 @@ exports.createComplaint = async (req, res) => {
       return res.status(400).json({ error: "User department missing" });
     }
 
-    const { title, description, category, priority, location } = req.body;
+    const {
+      title,
+      description,
+      category,
+      department,
+      location
+    } = req.body;
 
     if (!title || !description || !category || !location) {
       return res.status(400).json({ error: "All required fields needed" });
     }
 
+    if (!department) {
+      return res.status(400).json({
+        error: "Department required"
+      });
+    }
+
+    if (!departments.includes(department)) {
+      return res.status(400).json({
+        error: "Invalid department"
+      });
+    }
+
     const admins = await User.find({
       role: "admin",
-      department: req.user.department
+      department: department
     }).sort({ _id: 1 });
+    console.log("Selected Department:", department);
+    console.log("Found Admins:", admins);
 
     let assignedAdmin = null;
 
     if (admins.length > 0) {
       let record = await Assignment.findOne({
-        department: req.user.department
+        department: department
       });
 
       if (!record) {
         record = await Assignment.create({
-          department: req.user.department,
+          department: department,
           lastIndex: -1
         });
       }
@@ -45,6 +67,7 @@ exports.createComplaint = async (req, res) => {
       const nextIndex = (record.lastIndex + 1) % admins.length;
 
       assignedAdmin = admins[nextIndex]._id;
+      console.log("Assigned Admin ID:", assignedAdmin);
       record.lastIndex = nextIndex;
 
       await record.save();
@@ -60,15 +83,18 @@ exports.createComplaint = async (req, res) => {
       imageFileId = result.fileId;   // 🔥 IMPORTANT FIX
     }
 
+    const detectedPriority = detectPriority(
+      `${title} ${description}`
+    );
     const complaint = await Complaint.create({
       title,
       description,
       category,
-      priority,
+      priority: detectedPriority,
       location,
       imageUrl,
       imageFileId,
-      department: req.user.department,
+      department: department,
       student: req.user.id,
       assignedTo: assignedAdmin,
       remarks: []
@@ -92,7 +118,7 @@ exports.createComplaint = async (req, res) => {
             title,
             description,
             category,
-            priority,
+            priority: detectedPriority,
             location
           })
         });

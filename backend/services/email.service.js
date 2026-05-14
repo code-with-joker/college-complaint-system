@@ -10,7 +10,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS
   }
 });
-console.log(process.env.SMTP_USER)
 // 🔥 reusable send function
 exports.sendEmail = async ({ to, subject, html }) => {
   try {
