@@ -12,7 +12,7 @@ export default function ComplaintForm() {
     description: "",
     category: "",
     department: "",
-    priority: "Low",
+    // priority: "Low",
     location: ""
   });
 
@@ -83,7 +83,6 @@ export default function ComplaintForm() {
       formData.append("description", form.description);
       formData.append("category", form.category);
       formData.append("department", form.department);
-      formData.append("priority", form.priority);
       formData.append("location", form.location);
 
       if (image) {
@@ -117,7 +116,6 @@ export default function ComplaintForm() {
         description: "",
         category: "",
         department: "",
-        priority: "Low",
         location: ""
       });
 
@@ -182,6 +180,9 @@ export default function ComplaintForm() {
 
           {/* Description */}
           <label className="text-sm font-semibold">Description</label>
+          <p className="text-xs text-gray-500 mb-4">
+            Priority will be automatically detected based on complaint severity
+          </p>
           <textarea
             value={form.description}
             onChange={(e) =>
@@ -207,23 +208,10 @@ export default function ComplaintForm() {
             ))}
           </select>
 
-          {/* Priority */}
-          <label className="text-sm font-semibold">Priority</label>
-          <select
-            value={form.priority}
-            onChange={(e) =>
-              setForm({ ...form, priority: e.target.value })
-            }
-            className="w-full p-3 mb-4 border rounded-lg"
-          >
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Emergency</option>
-          </select>
+
 
           {/* Department */}
-          <label className="text-sm font-semibold">Department</label>
+          <label className="text-sm font-semibold">Concerned Department</label>
           <select
             value={form.department}
             onChange={(e) =>
